@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        html,body{
+            touch-action:none;
+        }
+    </style>
+</head>
+<body>
+    <canvas width="600" height="100" id="canvas" style="position:absolute;background-color: black;">
+
+    </canvas>      
+      
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d')
+        ctx.strokeStyle = 'red'
+
+        ctx.lineWidth = 1
+        ctx.beginPath();
+    // ctx.moveTo(0, 50);
+    // ctx.lineTo(4536, 50);
+    // ctx.stroke();
+    // for(var i=0;i<144;i++){
+    // ctx.beginPath();
+    // ctx.moveTo(i*30+1.5,50);
+    // ctx.lineTo(i*30+1.5,40);
+    // ctx.stroke();
+    // ctx.font = "12px serif";
+    // ctx.fillStyle = "white";
+    // ctx.fillText(i*10, i*30+1.5, 38);
+    // }
+    ctx.moveTo(0, 50);
+    ctx.lineTo(600, 50);
+    ctx.stroke();
+    for(var i=0;i<40;i++){
+    ctx.beginPath();
+    ctx.moveTo(i*20+1.5,50);
+    ctx.lineTo(i*20+1.5,40);
+    ctx.stroke();
+    ctx.font = "14px serif";
+    ctx.fillStyle = "white";
+    ctx.fillText(i, i*20+1.5, 38);
+    }
+    let x0
+    let x
+    let isMove = false
+    let ol
+    canvas.addEventListener('touchstart',(e)=>{
+       x0 = e.changedTouches[0].pageX
+       ol = canvas.style.left?parseInt(canvas.style.left):0
+        console.log('touchstart');
+    })
+    canvas.addEventListener('touchmove',(e)=>{
+        let x1 = e.changedTouches[0].pageX
+        x = x1-x0+ol
+        //判断y的边界
+        if(e.changedTouches[0].clientY<0||e.changedTouches[0].clientY>50) return
+        //判断x左边界
+        if(isNaN(parseInt(canvas.style.left))&&x1>x0||parseInt(canvas.style.left)==0&&x1>x0) return
+        //判断x右边界
+        if(parseInt(canvas.style.left)<375-600&&x1<x0) return;
+        console.log('touchmove');
+        if(x>0){
+            x=0 //先向右滑动，再向左急速滑动会越界
+        }
+        if(x<document.documentElement.clientWidth-600){
+            x=document.documentElement.clientWidth-600
+        }
+        canvas.style.left = x+'px'
+    })    
+    canvas.addEventListener('touchend',(e)=>{
+     /*    console.log('touchend');
+        解绑
+        canvas.removeEventListener('touchmove',(e)=>{
+        if(!isPressed||e.changedTouches[0].clientY<0||e.changedTouches[0].clientY>50){
+            return
+        }
+        let x1 = e.changedTouches[0].pageX
+        x = x1-x0 
+        console.log('touchmove',x);
+        canvas.style.left = x +'px'
+    }) */
+    })    
+function time(t){
+    if(t<60){
+        if(t<10){
+          return '00:0'+t 
+        }else{
+            return '00:'+t
+        }
+        
+    }else{
+        let h = t%60
+        if(h<10){
+            return '0'+h+':'+t-(h*60)
+        }else{
+            return t
+        }
+    }
+}
+    </script>
+</body>
+</html>

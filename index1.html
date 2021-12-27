@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="viewer" style="width: 200px; height: 200px; background-color: rebeccapurple;">
+
+    </div>
+<script>
+          function setGesture(el){
+             var obj = {}; //定义一个对象
+             var istouch = false;
+             var start = [];
+             //监听touchstart事件
+             el.addEventListener("touchstart",function(e){
+               if(e.touches.length >= 2){  //判断是否有两个点在屏幕上
+                 istouch = true;
+                 start = e.touches;  //得到第一组两个点
+                 obj.gesturestart && obj.gesturestart.call(el); //执行gesturestart方法
+               };
+             },false);
+             //监听touchmove事件
+             el.addEventListener("touchmove",function(e){
+               if(e.touches.length >= 2 &&  istouch){
+                 var now = e.touches;  //得到第二组两个点
+                 var scale = getDistance(now[0],now[1])/getDistance(start[0],start[1]); //得到缩放比例，getDistance是勾股定理的一个方法
+                 e.scale = scale.toFixed(2);
+                 obj.gesturemove && obj.gesturemove.call(el,e);  //执行gesturemove方法
+               }
+                 
+             },false);
+             //监听touchend事件
+             el.addEventListener("touchend",function(e){
+               if(istouch){
+                 istouch=false;
+                 obj.gestureend && obj.gestureend.call(el);  //执行gestureend方法
+               };
+             },false);
+             return obj;
+           };
+           //两点的距离
+           function getDistance(p1, p2) {
+               var x = p2.pageX - p1.pageX,
+                   y = p2.pageY - p1.pageY;
+               return Math.sqrt((x * x) + (y * y));
+           };
+           //方法调用（这里是根据需要来实现调用）
+           var imgpreview = document.getElementById("viewer");
+           //有时候会出现平布大小不兼容，这边做一个兼容处理
+           var w=window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+           var h=window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+           imgpreview.style.width = w+"px";
+           imgpreview.style.height = h+"px";
+           var boxGesture = setGesture(imgpreview);
+           boxGesture.gesturemove=function(e){  //双指移动
+             imgpreview.style.transform="scale("+e.scale+")";//改变目标元素的大小
+             if (e.scale > 3) {
+               imgpreview.style.transform="scale(4)";
+             }
+           };
+   
+</script>
+
+</body>
+</html>
